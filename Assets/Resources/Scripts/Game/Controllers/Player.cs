@@ -15,15 +15,18 @@ public class Player : Controller
 	public override void Awake()
 	{
 		base.Awake();
-		xSensitivity = 1f;
-		ySensitivity = 1f;
+		xSensitivity = 10f;
+		ySensitivity = 10f;
 	}
 
 	public void Update()
 	{
 		float dx = xSensitivity * Input.GetAxis("Mouse X");
 		float dy = -ySensitivity * Input.GetAxis("Mouse Y");
-		transform.Rotate(dy, dx, 0);
+		if(Input.GetKey(KeyCode.LeftControl))
+			transform.Rotate(dy, 0, -dx);
+		else
+			transform.Rotate(dy, dx, 0);
 	}
 
 	// Movement
