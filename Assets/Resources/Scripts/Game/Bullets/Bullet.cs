@@ -71,7 +71,7 @@ public class Bullet : MonoBehaviour
 		physbody = transform.GetComponent<Rigidbody>();
 	}
 		
-	public void OnTriggerEnter(Collision col)
+	public void OnTriggerEnter(Collider col)
 	{
 		// Collision with an entity gameobject
 		if(col.gameObject.layer == LayerMask.NameToLayer("Entity"))
