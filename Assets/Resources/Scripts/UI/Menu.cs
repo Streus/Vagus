@@ -1,15 +1,30 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Menu : MonoBehaviour {
+public class Menu : MonoBehaviour
+{
+	private Animator animator;
+	private CanvasGroup canvasGroup;
 
-	// Use this for initialization
-	void Start () {
-	
+	public bool IsOpen
+	{
+		get{ return animator.GetBool("IsOpen"); }
+		set{ animator.SetBool("IsOpen", value); }
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	public void Awake()
+	{
+		animator = GetComponent<Animator>();
+		canvasGroup = GetComponent<CanvasGroup>();
+
+		//move this menu onto the canvas
+		RectTransform rect = GetComponent<RectTransform>();
+		rect.offsetMax = rect.offsetMin = Vector2.zero;
+	}
+
+	public void Update()
+	{
+		//if this menu is not open, make it uninteractable
+		canvasGroup.blocksRaycasts = canvasGroup.interactable = animator.GetCurrentAnimatorStateInfo(0).IsName("Open");
 	}
 }
