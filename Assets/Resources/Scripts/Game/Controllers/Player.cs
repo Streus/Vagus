@@ -3,26 +3,50 @@ using System.Collections;
 
 public class Player : Controller
 {
-	// Movement
-	public void FixedUpdate ()
+	public float xSensitivity;
+	public float ySensitivity;
+
+	public override void OnStartLocalPlayer()
 	{
+		CameraControl.mainCam.Player = gameObject;
+		Debug.Log(CameraControl.mainCam.Player.name + " is being followed by the camera.");
+	}
+
+	public override void Awake()
+	{
+		base.Awake();
+		xSensitivity = 1f;
+		ySensitivity = 1f;
+	}
+
+	public void Update()
+	{
+		float dx = xSensitivity * Input.GetAxis("Mouse X");
+		float dy = -ySensitivity * Input.GetAxis("Mouse Y");
+		transform.Rotate(dy, dx, 0);
+	}
+
+	// Movement
+	public void FixedUpdate()
+	{
+		if(!isLocalPlayer)
+			return;
+
 		//temporary 
 		if (Input.GetKey (KeyCode.W))
-			physbody.AddForce (Vector3.forward * self.Speed);
+			physbody.AddForce (transform.forward * self.Speed);
 		if (Input.GetKey (KeyCode.A))
-			physbody.AddForce (Vector3.left * self.Speed);
+			physbody.AddForce (transform.right * -self.Speed);
 		if (Input.GetKey (KeyCode.S))
-			physbody.AddForce (Vector3.back * self.Speed);
+			physbody.AddForce (transform.forward * -self.Speed);
 		if (Input.GetKey (KeyCode.D))
-			physbody.AddForce (Vector3.right * self.Speed);
+			physbody.AddForce (transform.right * self.Speed);
+	}
 
-		if (Input.GetKey (KeyCode.Space))
-		{
-			RaycastHit hit;
-			Ray ray = new Ray (transform.position + Vector3.down, Vector3.down);
-			GetComponent<Collider> ().Raycast (ray, out hit, 0.1f);
-			if(hit.collider != null)
-				physbody.AddForce (Vector3.up * 2, ForceMode.Impulse);
-		}
+	public void OnDestroy()
+	{
+		string str = CameraControl.mainCam.Player.name;
+		CameraControl.mainCam.Player = null;
+		Debug.Log(str + " reliquished control of the camera.");
 	}
 }
