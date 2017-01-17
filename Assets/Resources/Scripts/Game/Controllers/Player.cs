@@ -21,12 +21,9 @@ public class Player : Controller
 
 	public void Update()
 	{
-		float dx = xSensitivity * Input.GetAxis("Mouse X");
-		float dy = -ySensitivity * Input.GetAxis("Mouse Y");
-		if(Input.GetKey(KeyCode.LeftControl))
-			transform.Rotate(dy, 0, -dx);
-		else
-			transform.Rotate(dy, dx, 0);
+		float dx = -xSensitivity * Input.GetAxis("Mouse X");
+		//float dy = -ySensitivity * Input.GetAxis("Mouse Y");
+		transform.Rotate(0, 0, dx);
 	}
 
 	// Movement
@@ -37,11 +34,11 @@ public class Player : Controller
 
 		//temporary 
 		if (Input.GetKey (KeyCode.W))
-			physbody.AddForce (transform.forward * self.Speed);
+			physbody.AddForce (transform.up * self.Speed);
 		if (Input.GetKey (KeyCode.A))
 			physbody.AddForce (transform.right * -self.Speed);
 		if (Input.GetKey (KeyCode.S))
-			physbody.AddForce (transform.forward * -self.Speed);
+			physbody.AddForce (transform.up * -self.Speed);
 		if (Input.GetKey (KeyCode.D))
 			physbody.AddForce (transform.right * self.Speed);
 	}

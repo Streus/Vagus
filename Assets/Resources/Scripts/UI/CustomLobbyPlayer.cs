@@ -13,12 +13,14 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 		base.OnStartLocalPlayer ();
 		readyToBegin = false;
 		SendNotReadyToBeginMessage();
+
+		LobbyMenu.singleton.localPlayer = this;
 	}
 
 	public override void OnClientEnterLobby ()
 	{
 		base.OnClientEnterLobby ();
-		summary = LobbyMenu.singleton.addPlayerSummary(gameObject, "Player " + NetworkLobbyManager.singleton.numPlayers);
+		summary = LobbyMenu.singleton.addPlayerSummary(gameObject, "Player " + (slot + 1));
 	}
 
 	public override void OnClientExitLobby ()
@@ -30,5 +32,9 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 	public override void OnClientReady (bool readyState)
 	{
 		base.OnClientReady (readyState);
+		if(readyState)
+			readyIndicator.color = new Color(0f, 1f, 1f);
+		else
+			readyIndicator.color = Color.white;
 	}
 }

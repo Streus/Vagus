@@ -96,6 +96,11 @@ public class Entity : MonoBehaviour
 		controller = transform.GetComponent<Controller> ();
 	}
 
+	public void Update()
+	{
+		//TODO entity update
+	}
+
 	// Play a death animation and destroy this gameobject
 	public void die()
 	{
