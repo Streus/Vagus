@@ -8,6 +8,8 @@ public class LobbyMenu : MonoBehaviour
 	public static LobbyMenu singleton;
 	public GameObject playerSummaryPrefab;
 
+	public CustomLobbyPlayer localPlayer;
+
 	public Transform playerList;
 
 	public void Start()
@@ -16,6 +18,20 @@ public class LobbyMenu : MonoBehaviour
 			singleton = this;
 		else
 			throw new UnityException("More than one LobbyMenu!");
+	}
+
+	public void disconnect()
+	{
+		if(localPlayer.isClient)
+		{
+			localPlayer.RemovePlayer();
+			NetworkLobbyManager.singleton.StopClient();
+		}
+		if(localPlayer.isServer)
+		{
+			localPlayer.RemovePlayer();
+			NetworkLobbyManager.singleton.StopHost();
+		}
 	}
 
 	public GameObject addPlayerSummary(GameObject player, string name)

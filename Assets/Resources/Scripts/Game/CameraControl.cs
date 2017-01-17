@@ -50,12 +50,12 @@ public class CameraControl : MonoBehaviour
 				transform.parent.DetachChildren();
 				gameObject.SetActive(true);
 				transform.position = Vector3.zero;
-				transform.rotation = Quaternion.Euler(15f, 0f, 0f);
+				transform.rotation = Quaternion.Euler(-75f, 0f, 0f);
 			}
 			else if(value != null)
 			{
 				transform.SetParent(value.transform, false);
-				transform.position += new Vector3(0f, 2f, -2.5f);
+				transform.position = new Vector3(0f, -5f, -2.5f);
 			}
 		}
 	}
