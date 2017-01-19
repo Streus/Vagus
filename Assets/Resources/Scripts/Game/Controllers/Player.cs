@@ -6,10 +6,12 @@ public class Player : Controller
 	public float xSensitivity;
 	public float ySensitivity;
 
+	private GameObject engEmmisEff;
+
 	public override void OnStartLocalPlayer()
 	{
-		CameraControl.mainCam.Player = gameObject;
-		Debug.Log(CameraControl.mainCam.Player.name + " is being followed by the camera.");
+		CameraControl.mainCam.FollowTarget = gameObject;
+		Debug.Log(CameraControl.mainCam.FollowTarget.name + " is being followed by the camera.");
 	}
 
 	public override void Awake()
@@ -17,6 +19,9 @@ public class Player : Controller
 		base.Awake();
 		xSensitivity = 10f;
 		ySensitivity = 10f;
+
+		engEmmisEff = transform.GetChild (0).gameObject;
+		engEmmisEff.SetActive (false);
 	}
 
 	public void Update()
@@ -41,12 +46,14 @@ public class Player : Controller
 			physbody.AddForce (transform.up * -self.Speed);
 		if (Input.GetKey (KeyCode.D))
 			physbody.AddForce (transform.right * self.Speed);
+
+		engEmmisEff.SetActive (Input.GetKey (KeyCode.W));
 	}
 
 	public void OnDestroy()
 	{
-		string str = CameraControl.mainCam.Player.name;
-		CameraControl.mainCam.Player = null;
+		string str = CameraControl.mainCam.FollowTarget.name;
+		CameraControl.mainCam.FollowTarget = null;
 		Debug.Log(str + " reliquished control of the camera.");
 	}
 }
