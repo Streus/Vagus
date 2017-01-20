@@ -5,58 +5,63 @@ public class CameraControl : MonoBehaviour
 {
 	public static CameraControl mainCam;
 
+	public Vector3 camOffset;
+	public Vector3 camRotation;
+
 	private Transform cam;
 
 	//camera shake varibles
 	private float intensity;
 	private float shakeTime;
 
-	public void Awake ()
+	private GameObject followTar;
+	public GameObject FollowTarget
 	{
-		if(mainCam == null)
+		get{ return followTar; }
+		set{ followTar = value; }
+	}
+
+	public void Awake()
+	{
+		if (mainCam == null)
 			mainCam = this;
-		Player = null;
+		else
+			throw new UnityException ("More than one camera active!");
+		
+		FollowTarget = null;
 
 		cam = transform.GetChild (0);
 	}
 
-	public void Update ()
+	public void Start()
 	{
-		if(transform.parent == null)
-			return;
-		
+		cam.position = camOffset;
+		cam.rotation = Quaternion.Euler(camRotation);
+	}
+
+	public void Update()
+	{
 		if (shakeTime > 0f) {
 			Vector3 shakePos = Random.insideUnitSphere * intensity;
-			cam.transform.localPosition = shakePos;
+			cam.localPosition = shakePos + camOffset;
 			shakeTime -= Time.deltaTime;
 		} else {
-			cam.transform.localPosition = Vector3.zero;
+			cam.localPosition = camOffset;
 		}
+	}
+
+	public void LateUpdate()
+	{
+		if (followTar == null)
+			return;
+		
+		transform.position = followTar.transform.position;
+		transform.rotation = Quaternion.Euler(0f, 0f, followTar.transform.rotation.eulerAngles.z);
 	}
 
 	public void shakeCamera(float intensity, float shakeTime)
 	{
 		this.intensity = intensity;
 		this.shakeTime = shakeTime;
-	}
-
-	public GameObject Player
-	{
-		get{ return transform.parent.gameObject; }
-		set
-		{
-			if(value == null && transform.parent != null)
-			{
-				transform.parent.DetachChildren();
-				gameObject.SetActive(true);
-				transform.position = Vector3.zero;
-				transform.rotation = Quaternion.Euler(-75f, 0f, 0f);
-			}
-			else if(value != null)
-			{
-				transform.SetParent(value.transform, false);
-				transform.position = new Vector3(0f, -5f, -2.5f);
-			}
-		}
 	}
 }
