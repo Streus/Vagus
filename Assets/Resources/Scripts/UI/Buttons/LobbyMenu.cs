@@ -2,15 +2,18 @@
 using System.Collections;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
-public class LobbyMenu : MonoBehaviour
+public class LobbyMenu : NetworkBehaviour
 {
 	public static LobbyMenu singleton;
+
 	public GameObject playerSummaryPrefab;
 
 	public CustomLobbyPlayer localPlayer;
 
-	public Transform playerList;
+	public List<CustomLobbyPlayer> players = new List<CustomLobbyPlayer> ();
+	public Transform playerListTransform;
 
 	public void Start()
 	{
@@ -18,38 +21,49 @@ public class LobbyMenu : MonoBehaviour
 			singleton = this;
 		else
 			throw new UnityException("More than one LobbyMenu!");
+		
+		localPlayer = null;
 	}
 
-	public void disconnect()
+	public PlayerSummary addPlayerSummary(CustomLobbyPlayer player)
 	{
-		if(localPlayer.isClient)
-		{
-			localPlayer.RemovePlayer();
-			NetworkLobbyManager.singleton.StopClient();
-		}
-		if(localPlayer.isServer)
-		{
-			localPlayer.RemovePlayer();
-			NetworkLobbyManager.singleton.StopHost();
-		}
-	}
+		if (players.Contains (player))
+			return null;
 
-	public GameObject addPlayerSummary(GameObject player, string name)
-	{
+		players.Add (player);
+
 		GameObject playerSum = (GameObject)Instantiate(playerSummaryPrefab);
-		playerSum.transform.SetParent(transform.GetChild(0).GetChild(1), false);
-		playerSum.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = name;
-		playerSum.transform.GetChild(1).GetComponent<Image>().color = Color.white;
-		NetworkServer.SpawnWithClientAuthority(playerSum, player);
+		PlayerSummary summary = playerSum.GetComponent<PlayerSummary> ();
+		playerSum.transform.SetParent(playerListTransform, false);
+		summary.nameField.text = player.playerName;
+		summary.readyIndicator.color = Color.white;
 
-		return playerSum;
+		return summary;
 	}
 
-	public void removePlayerSummary(GameObject player, GameObject summary)
+	public void removePlayerSummary(CustomLobbyPlayer player)
 	{
-		if(player.GetComponent<NetworkLobbyPlayer>().hasAuthority)
-		{
-			NetworkServer.UnSpawn(summary);
-		}
+		if (!players.Contains (player))
+			return;
+
+		players.Remove (player);
+
+		Destroy (player.summary.gameObject);
+	}
+
+	public void OnReady()
+	{
+		localPlayer.SendReadyToBeginMessage ();
+	}
+
+	public void OnChangeName(string name)
+	{
+		CmdChangeName (name);
+	}
+
+	[Command]
+	public void CmdChangeName(string name)
+	{
+		localPlayer.playerName = name;
 	}
 }
