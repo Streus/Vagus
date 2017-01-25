@@ -5,36 +5,65 @@ using UnityEngine.UI;
 
 public class CustomLobbyPlayer : NetworkLobbyPlayer
 {
-	public Image readyIndicator;
-	private GameObject summary;
+	[SyncVar(hook = "OnThisName")]
+	public string playerName;
 
-	public override void OnStartLocalPlayer ()
-	{
-		base.OnStartLocalPlayer ();
-		readyToBegin = false;
-		SendNotReadyToBeginMessage();
-
-		LobbyMenu.singleton.localPlayer = this;
-	}
+	public PlayerSummary summary;
 
 	public override void OnClientEnterLobby ()
 	{
 		base.OnClientEnterLobby ();
-		summary = LobbyMenu.singleton.addPlayerSummary(gameObject, "Player " + (slot + 1));
+		CustomLobbyManager.lobbyManager.NumClientPlayers++;
+
+		summary = LobbyMenu.singleton.addPlayerSummary (this);
+
+		if (isLocalPlayer)
+			SetupLocal ();
+		else
+			SetupRemote ();
+
+		OnThisName (playerName);
 	}
 
-	public override void OnClientExitLobby ()
+	public override void OnStartAuthority ()
 	{
-		base.OnClientExitLobby ();
-		LobbyMenu.singleton.removePlayerSummary(gameObject, summary);
+		base.OnStartAuthority ();
+
+		SetupLocal ();
+	}
+
+	public void SetupLocal()
+	{
+		OnClientReady (false);
+		LobbyMenu.singleton.localPlayer = this;
+	}
+
+	public void SetupRemote()
+	{
+		OnClientReady (false);
+	}
+
+	public void OnThisName(string name)
+	{
+		playerName = name;
+		summary.nameField.text = name;
 	}
 
 	public override void OnClientReady (bool readyState)
 	{
-		base.OnClientReady (readyState);
-		if(readyState)
-			readyIndicator.color = new Color(0f, 1f, 1f);
+		if (readyState)
+		{
+			summary.readyIndicator.color = Color.cyan;
+		}
 		else
-			readyIndicator.color = Color.white;
+		{
+			summary.readyIndicator.color = Color.white;
+		}
+	}
+
+	public void OnDestroy()
+	{
+		LobbyMenu.singleton.removePlayerSummary (this);
+		CustomLobbyManager.lobbyManager.NumClientPlayers--;
 	}
 }
