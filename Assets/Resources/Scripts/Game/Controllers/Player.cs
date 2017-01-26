@@ -6,6 +6,8 @@ public class Player : Controller
 	public float xSensitivity;
 	public float ySensitivity;
 
+	//double tap variables
+
 	private GameObject engEmmisEff;
 
 	public override void OnStartLocalPlayer()
@@ -26,6 +28,9 @@ public class Player : Controller
 
 	public void Update()
 	{
+		if (!isLocalPlayer)
+			return;
+
 		float dx = -xSensitivity * Input.GetAxis("Mouse X");
 		//float dy = -ySensitivity * Input.GetAxis("Mouse Y");
 		transform.Rotate(0, 0, dx);

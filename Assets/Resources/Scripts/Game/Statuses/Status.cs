@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Status : Passive
+namespace EntityStats
 {
-	//TODO
+	public class Status : Passive
+	{
+		//TODO
+	}
 }
