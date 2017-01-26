@@ -8,6 +8,9 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 	[SyncVar(hook = "OnThisName")]
 	public string playerName;
 
+	[SyncVar(hook = "OnThisTeam")]
+	public int playerTeam;
+
 	public PlayerSummary summary;
 
 	public override void OnClientEnterLobby ()
@@ -23,6 +26,7 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 			SetupRemote ();
 
 		OnThisName (playerName);
+		OnThisTeam (playerTeam);
 	}
 
 	public override void OnStartAuthority ()
@@ -43,14 +47,14 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 		OnClientReady (false);
 	}
 
-	public void OnThisName(string name)
-	{
-		playerName = name;
-		summary.nameField.text = name;
-	}
-
 	public override void OnClientReady (bool readyState)
 	{
+		if (summary == null)
+		{
+			Debug.LogError ("Summary not yet initialized!");
+			return;
+		}
+
 		if (readyState)
 		{
 			summary.readyIndicator.color = Color.cyan;
@@ -59,6 +63,46 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 		{
 			summary.readyIndicator.color = Color.white;
 		}
+	}
+
+	// Name field mutators
+	public void OnThisName(string name)
+	{
+		playerName = name;
+		summary.nameField.text = name;
+	}
+	public void changeName(string name)
+	{
+		CmdChangeName (name);
+	}
+	[Command]
+	public void CmdChangeName(string name)
+	{
+		playerName = name;
+	}
+
+	// Team field mutators
+	public void OnThisTeam(int team)
+	{
+		playerTeam = team;
+		switch (team)
+		{
+		case 0:
+			summary.teamIndicator.color = Color.red;
+			break;
+		case 1:
+			summary.teamIndicator.color = Color.blue;
+			break;
+		}
+	}
+	public void changeTeam(int team)
+	{
+		CmdChangeTeam (team);
+	}
+	[Command]
+	public void CmdChangeTeam(int team)
+	{
+		playerTeam = team;
 	}
 
 	public void OnDestroy()

@@ -2,16 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 
-// Delegate for when an entity takes damage from a bullet
-public delegate void EntityDamaged();
-
-//Delegate for when the status list is updated
-public delegate void UpdatedStatusList(Status newStatus);
-
 public class Entity : MonoBehaviour
 {
-	/* Instance Vars */
+	[RequireComponent(typeof(Animator))]
 
+	/* Instance Vars */
 	private float shield;
 	public float shieldMax;
 	public float shieldRegen;
@@ -24,16 +19,17 @@ public class Entity : MonoBehaviour
 
 	public Faction faction;
 
-	private Passive[] equipment;
-	private List<Status> statusEffects;
-	private Ability primaryFire;
-	private Ability secondaryAbility;
+	private EntityStats.Passive[] equipment;
+	private List<EntityStats.Status> statusEffects;
+	private EntityStats.Ability primaryFire;
+	private EntityStats.Ability ability1;
+	private EntityStats.Ability ability2;
+	private EntityStats.Ability ability3;
 
 	private Animator animator;
 	private Controller controller;
 
 	/* Accessors */
-
 	public float Health
 	{
 		get{ return health; }
@@ -89,8 +85,8 @@ public class Entity : MonoBehaviour
 	public void Awake()
 	{
 		health = healthMax;
-		equipment = new Passive[5];
-		statusEffects = new List<Status> ();
+		equipment = new EntityStats.Passive[4];
+		statusEffects = new List<EntityStats.Status> ();
 
 		animator = transform.GetComponent<Animator> ();
 		controller = transform.GetComponent<Controller> ();
@@ -110,6 +106,7 @@ public class Entity : MonoBehaviour
 	/* Events */
 
 	// Entity takes damage
+	public delegate void EntityDamaged();
 	public event EntityDamaged entityDam;
 	public virtual void OnEntityDamaged()
 	{
@@ -118,6 +115,7 @@ public class Entity : MonoBehaviour
 	}
 
 	// StatusList is updated
+	public delegate void UpdatedStatusList(Status newStatus);
 	public event UpdatedStatusList updateStatus;
 	public virtual void OnStatusListUpdated(Status newStatus)
 	{

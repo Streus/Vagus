@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class LobbyMenu : NetworkBehaviour
+public class LobbyMenu : MonoBehaviour
 {
 	public static LobbyMenu singleton;
 
@@ -15,7 +15,7 @@ public class LobbyMenu : NetworkBehaviour
 	public List<CustomLobbyPlayer> players = new List<CustomLobbyPlayer> ();
 	public Transform playerListTransform;
 
-	public void Start()
+	public void Awake()
 	{
 		if(singleton == null)
 			singleton = this;
@@ -51,19 +51,28 @@ public class LobbyMenu : NetworkBehaviour
 		Destroy (player.summary.gameObject);
 	}
 
+	public void OnDisconnectRequest()
+	{
+		if (localPlayer.isServer)
+			CustomLobbyManager.lobbyManager.StopServer ();
+		CustomLobbyManager.lobbyManager.StopClient ();
+	}
+
 	public void OnReady()
 	{
-		localPlayer.SendReadyToBeginMessage ();
+		if (!localPlayer.readyToBegin)
+			localPlayer.SendReadyToBeginMessage ();
+		else
+			localPlayer.SendNotReadyToBeginMessage ();
 	}
 
 	public void OnChangeName(string name)
 	{
-		CmdChangeName (name);
+		localPlayer.changeName (name);
 	}
 
-	[Command]
-	public void CmdChangeName(string name)
+	public void OnChangeTeam(int team)
 	{
-		localPlayer.playerName = name;
+		localPlayer.changeTeam (team);
 	}
 }
