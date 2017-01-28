@@ -5,7 +5,6 @@ using UnityEngine.Networking;
 public class Bullet : MonoBehaviour
 {
 	/* Instance Vars */
-
 	public Faction faction;
 	public float damage;
 	public int initSpeed;
@@ -52,20 +51,42 @@ public class Bullet : MonoBehaviour
 		return b;
 	}
 
+	// Thow out a raycast and deal damage to either the first hit Entity, or all Entities hit
+	public static void hitScan(Faction faction, float damage, Vector2 dir, Vector2 start, float distance, int penetrations = int.MaxValue)
+	{
+		//TODO work OnDamageTaken and OnDamageDealt in here somehow
+		int worldMask = 1 << 8;
+		RaycastHit2D[] hits = Physics2D.RaycastAll (start, dir, distance, worldMask);
+		foreach (RaycastHit2D hit in hits)
+		{
+			if (hit.collider != null && hit.collider.GetComponent<Entity> ().faction != faction)
+			{
+				dealDamage(damage, hit.collider.GetComponent<Entity> ());
+				penetrations--;
+				if (penetrations < 0)
+					return;
+			}
+		}
+	}
+
 	// Deal damage to non-aligned faction entities and destructable objects
+	public static void dealDamage(Bullet bullet, Entity other)
+	{
+		dealDamage (bullet.damage, other);
+	}
 	public static void dealDamage(float damage, Entity other)
 	{
 		if(damage < 0)
 		{
 			throw new UnityException("Tried to apply negative damage!");
 		}
-		other.Shield -= damage;
-		if(damage > other.Shield)
-			other.Health -= (damage - other.Shield);
+		other.currentShield -= damage;
+		other.resetSRDelay ();
+		if(damage > other.currentShield)
+			other.currentHealth -= (damage - other.currentShield);
 	}
 
 	/* Instance Methods */
-
 	public void Awake()
 	{
 		physbody = transform.GetComponent<Rigidbody>();
@@ -78,6 +99,20 @@ public class Bullet : MonoBehaviour
 		{
 			Entity other = col.gameObject.GetComponent<Entity>();
 			dealDamage(damage, other);
+
+			foreach (Passive p in other.equipment) 
+			{
+				p.OnDamageTaken (this);
+			}
+
+			Entity creatorEnt = creator.GetComponent<Entity> ();
+			if(creatorEnt != null)
+			{
+				foreach (Passive p in creatorEnt.equipment)
+				{
+					p.OnDamageDealt (this, other);
+				}
+			}
 		}
 	}
 }
