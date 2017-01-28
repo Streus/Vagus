@@ -96,8 +96,13 @@ public abstract class Passive
 	// Arg: the bullet that hit subject Entity
 	public virtual void OnDamageTaken(Bullet bullet){ }
 
-	//Called when the subject Entity hits another Entity with a bullet
+	// Called when the subject Entity hits another Entity with a bullet
+	// Arg: the bullet that dealt damage
+	// Arg: the Entity that took damage
 	public virtual void OnDamageDealt(Bullet bullet, Entity other){ }
+
+	// Called when the subject Entity dies
+	public virtual void OnDeath(){ }
 
 	//TODO more Passive hooks?
 

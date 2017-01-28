@@ -121,10 +121,18 @@ public class Entity : MonoBehaviour
 				a.OnUpdate (Time.deltaTime);
 		}
 
+		// Update passive effects
+		foreach (Passive p in equipment)
+		{
+			if(p != null)
+				p.OnUpdate(Time.deltaTime);
+		}
+
 		// Update status durations
 		foreach (Status s in statusEffects)
 		{
-			s.OnUpdate (Time.deltaTime);
+			if(s != null)
+				s.OnUpdate (Time.deltaTime);
 		}
 
 		// Shield regeneration
@@ -136,7 +144,24 @@ public class Entity : MonoBehaviour
 	// Play a death animation and take the entity out of play for some time
 	public void die()
 	{
-		//TODO
+		// Remove all statuses
+		foreach (Status s in statusEffects)
+		{
+			if(s != null)
+			{
+				s.OnDeath();
+				statusEffects.Remove(s);
+			}
+		}
+
+		// Run OnDeath for passives
+		foreach(Passive p in equipment)
+		{
+			if(p != null)
+				p.OnDeath();
+		}
+
+		//TODO death effects, removal from game field, begin countdown to respawn
 	}
 
 	/* Events */
