@@ -2,105 +2,117 @@
 using System.Collections;
 using System;
 
-namespace EntityStats
+public abstract class Passive
 {
-	public abstract class Passive
+	/* Instance Vars */
+	protected int passive_id;
+
+	protected string name;
+	protected string desc;
+	protected Sprite icon;
+
+	protected Entity subject;
+
+	private bool applied;
+
+	/* Accessors */
+	public int PassiveID
 	{
-		/* Instance Vars */
-		protected int passive_id;
+		get{ return passive_id; }
+	}
 
-		protected string name;
-		protected string desc;
-		protected Sprite icon;
+	public string Name
+	{
+		get{ return name; }
+	}
+	public string Desc
+	{
+		get{ return desc; }
+	}
+	public Sprite Icon
+	{
+		get{ return icon; }
+	}
 
-		protected Entity subject;
+	public Entity Subject
+	{
+		get{ return subject; }
+	}
 
-		private bool applied;
+	/* Constructors */
+	public Passive()
+	{
+		passive_id = -1; //unlisted passive
 
-		/* Accessors */
-		public string PassiveID
-		{
-			get{ return passive_id; }
-		}
+		name = "NULL_NAME";
+		desc = "NULL PASSIVE";
+		icon = null;
 
-		public string Name
-		{
-			get{ return name; }
-		}
-		public string Desc
-		{
-			get{ return desc; }
-		}
-		public Sprite Icon
-		{
-			get{ return icon; }
-		}
+		this.subject = null;
 
-		public Entity Subject
-		{
-			get{ return subject; }
-		}
+		applied = false;
+	}
+	public Passive(Entity subject)
+	{
+		passive_id = -1; //unlisted passive
 
-		/* Constructors */
-		public Passive(Entity subject)
-		{
-			passive_id = -1; //unlisted passive
+		name = "DEFAULT_NAME";
+		desc = "UNINITIALIZED PASSIVE";
+		icon = null;
 
-			name = "DEFUALT_NAME";
-			desc = "UNINITIALIZED PASSIVE";
-			icon = null;
+		this.subject = subject;
 
-			this.subject = subject;
+		applied = false;
+	}
 
-			applied = false;
-		}
+	/* Deconstructors */
+	~Passive()
+	{
+		if (applied && subject != null)
+			revert ();
+	}
 
-		/* Deconstructors */
-		~Passive()
-		{
-			if (applied && subject != null)
-				revert ();
-		}
+	/* Instance Methods */
 
-		/* Instance Methods */
+	// Apply some change to the subject
+	public virtual void apply()
+	{
+		applied = true;
+		return;
+	}
 
-		// Apply some change to the subject
-		public virtual void apply()
-		{
-			applied = true;
-			return;
-		}
+	// Revert the change applied by this Passive
+	public virtual void revert()
+	{
+		applied = false;
+		return;
+	}
 
-		// Revert the change applied by this Passive
-		public virtual void revert()
-		{
-			applied = false;
-			return;
-		}
+	// Called by Entity for constant behaviors
+	// Arg: the deltaTime from subject Entity
+	public virtual void OnUpdate(float dec){ }
 
-		// Called by Entity for constant behaviors
-		// Arg: the deltaTime from subject Entity
-		public virtual void OnUpdate(float dec){ }
+	// Called when the subject Entity is hit by a bullet
+	// Arg: the bullet that hit subject Entity
+	public virtual void OnDamageTaken(Bullet bullet){ }
 
-		// Called by Entity for bullet hit behaviors
-		// Arg: the bullet that hit subject Entity
-		public virtual void OnBulletHit(Bullet bullet){ }
+	//Called when the subject Entity hits another Entity with a bullet
+	public virtual void OnDamageDealt(Bullet bullet, Entity other){ }
 
-		//TODO more Passive hooks?
+	//TODO more Passive hooks?
 
-		// Create another instance of this Passive with the same subject
-		public abstract Passive Copy (Entity e);
+	// Create another instance of this Passive with the same subject
+	public abstract Passive Copy (Entity e);
 
-		// Compare this Passive to another
-		public override bool Equals (object obj)
-		{
-			return this.passive_id == ((Passive)obj).passive_id;
-		}
+	// Compare this Passive to another
+	public override bool Equals (object obj)
+	{
+		return this.passive_id == ((Passive)obj).passive_id;
+	}
 
-		// Create a string for displaying information on this Passive
-		public override string ToString ()
-		{
-			return name + "\n" + desc;
-		}
+	// Create a string for displaying information on this Passive
+	public override string ToString ()
+	{
+		return name + "\n" + desc;
 	}
 }

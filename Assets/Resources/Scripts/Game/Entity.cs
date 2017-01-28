@@ -2,47 +2,61 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(Controller))]
 public class Entity : MonoBehaviour
 {
-	[RequireComponent(typeof(Animator))]
-
 	/* Instance Vars */
+
+	// A regenerative hit point pool that takes damage before health
 	private float shield;
-	public float shieldMax;
-	public float shieldRegen;
-	public float shieldRegenDelay;
+	public float shieldMax = 50f;
+	public float shieldMaxPerc = 1f;
 
+	public float shieldRegen = 1f;
+	public float srDelayMax;
+	private float srDelayCurr;
+	public float srDelayPerc = 1f;
+
+	// The primary hit point pool.  Entity dies when it reaches 0.
 	private float health;
-	public float healthMax;
+	public float healthMax = 50f;
+	public float healthMaxPerc = 1f;
 
-	public int speed;
+	// A scalar applied to movement vectors
+	public int speed = 1;
 
+	// Used to determine teams
 	public Faction faction;
 
-	private EntityStats.Passive[] equipment;
-	private List<EntityStats.Status> statusEffects;
-	private EntityStats.Ability primaryFire;
-	private EntityStats.Ability ability1;
-	private EntityStats.Ability ability2;
-	private EntityStats.Ability ability3;
+	[HideInInspector]
+	public Passive[] equipment;
+	[HideInInspector]
+	public Ability[] abilities;
+	private List<Status> statusEffects;
 
 	private Animator animator;
 	private Controller controller;
 
 	/* Accessors */
-	public float Health
+	public float currentHealth
 	{
 		get{ return health; }
 		set
 		{
 			health = value;
-			if (health > healthMax)
-				health = healthMax;
+			if (health > effectiveHealthMax)
+				health = effectiveHealthMax;
 			if (health <= 0f)
 				die ();
 		}
 	}
-	public float Shield
+	public float effectiveHealthMax
+	{
+		get{ return healthMax * healthMaxPerc; }
+	}
+
+	public float currentShield
 	{
 		get{ return shield; }
 		set
@@ -55,28 +69,28 @@ public class Entity : MonoBehaviour
 				shield = 0f;
 				shieldMax = 0f;
 				shieldRegen = 0f;
+				resetSRDelay ();
 			}
 		}
 	}
-	public float ShieldMax
+	public float effectiveShieldMax
 	{
-		get{ return shieldMax; }
-		set{ shieldMax = value; }
+		get{ return shieldMax * shieldMaxPerc; }
 	}
-	public float ShieldRegen
+
+	public float effectiveSRDelay
 	{
-		get{ return shieldRegen; }
-		set{ shieldRegen = value; }
+		get{ return srDelayMax * srDelayPerc; }
 	}
-	public float HealthMax
+
+	public void resetSRDelay()
 	{
-		get{ return healthMax; }
-		set{ healthMax = value; }
+		srDelayCurr = effectiveSRDelay;
 	}
-	public int Speed
+
+	public void getStatusList(out List<Status> statuses)
 	{
-		get{ return speed; }
-		set{ speed = value; }
+		statuses = this.statusEffects;
 	}
 
 	/* Instance Methods */
@@ -84,9 +98,11 @@ public class Entity : MonoBehaviour
 	// Setup internal variables
 	public void Awake()
 	{
-		health = healthMax;
-		equipment = new EntityStats.Passive[4];
-		statusEffects = new List<EntityStats.Status> ();
+		health = effectiveHealthMax;
+		shield = effectiveShieldMax;
+		equipment = new Passive[4];
+		abilities = new Ability[4];
+		statusEffects = new List<Status> ();
 
 		animator = transform.GetComponent<Animator> ();
 		controller = transform.GetComponent<Controller> ();
@@ -94,13 +110,33 @@ public class Entity : MonoBehaviour
 
 	public void Update()
 	{
-		//TODO entity update
+		// Terminate Update if this Entity is paused
+		if (!controller.PhysBody.simulated)
+			return;
+
+		// Update ability cooldowns
+		foreach (Ability a in abilities)
+		{
+			if (a != null)
+				a.OnUpdate (Time.deltaTime);
+		}
+
+		// Update status durations
+		foreach (Status s in statusEffects)
+		{
+			s.OnUpdate (Time.deltaTime);
+		}
+
+		// Shield regeneration
+		srDelayCurr -= Time.deltaTime;
+		if (srDelayCurr <= 0f || shieldRegen < 0f)
+			currentShield += shieldRegen;
 	}
 
-	// Play a death animation and destroy this gameobject
+	// Play a death animation and take the entity out of play for some time
 	public void die()
 	{
-		
+		//TODO
 	}
 
 	/* Events */

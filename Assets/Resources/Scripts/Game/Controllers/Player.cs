@@ -44,13 +44,13 @@ public class Player : Controller
 
 		//temporary 
 		if (Input.GetKey (KeyCode.W))
-			physbody.AddForce (transform.up * self.Speed);
+			physbody.AddForce (transform.up * self.speed);
 		if (Input.GetKey (KeyCode.A))
-			physbody.AddForce (transform.right * -self.Speed);
+			physbody.AddForce (transform.right * -self.speed);
 		if (Input.GetKey (KeyCode.S))
-			physbody.AddForce (transform.up * -self.Speed);
+			physbody.AddForce (transform.up * -self.speed);
 		if (Input.GetKey (KeyCode.D))
-			physbody.AddForce (transform.right * self.Speed);
+			physbody.AddForce (transform.right * self.speed);
 
 		engEmmisEff.SetActive (Input.GetKey (KeyCode.W));
 	}
