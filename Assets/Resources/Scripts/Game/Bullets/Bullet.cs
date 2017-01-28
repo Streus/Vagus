@@ -84,6 +84,8 @@ public class Bullet : MonoBehaviour
 		other.resetSRDelay ();
 		if(damage > other.currentShield)
 			other.currentHealth -= (damage - other.currentShield);
+
+		other.OnEntityDamaged();
 	}
 
 	/* Instance Methods */
