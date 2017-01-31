@@ -102,7 +102,7 @@ public class Bullet : MonoBehaviour
 			Entity other = col.gameObject.GetComponent<Entity>();
 			dealDamage(damage, other);
 
-			foreach (Passive p in other.equipment) 
+			foreach (Passive p in other.equipment)
 			{
 				p.OnDamageTaken (this);
 			}

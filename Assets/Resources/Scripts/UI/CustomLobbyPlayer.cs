@@ -88,7 +88,7 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 		switch (team)
 		{
 		case 0:
-			summary.teamIndicator.color = Color.red;
+			summary.teamIndicator.color = new Color(1f, 0.5f, 0f, 1f);
 			break;
 		case 1:
 			summary.teamIndicator.color = Color.blue;

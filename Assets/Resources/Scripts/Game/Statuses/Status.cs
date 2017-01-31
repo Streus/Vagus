@@ -106,6 +106,11 @@ public abstract class Status : Passive
 		}
 	}
 
+	public override bool Equals (object obj)
+	{
+		return this.status_id == ((Status)obj).status_id;
+	}
+
 }
 
 public enum DecayType
