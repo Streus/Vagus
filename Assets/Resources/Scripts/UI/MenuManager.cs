@@ -6,6 +6,7 @@ public class MenuManager : MonoBehaviour
 	public static MenuManager menusys;
 
 	public Menu currentMenu;
+	private Menu prevMenu;
 	private Menu[] menus;
 
 	public void Start()
@@ -34,7 +35,15 @@ public class MenuManager : MonoBehaviour
 	{
 		if(currentMenu != null)
 			currentMenu.IsOpen = false;
+		prevMenu = currentMenu;
 		currentMenu = menu;
 		currentMenu.IsOpen = true;
+	}
+
+	// REturn to the last menu that was displayed, if there is one
+	public void returnToPreviousMenu()
+	{
+		if (prevMenu != null)
+			showMenu (prevMenu);
 	}
 }

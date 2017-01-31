@@ -32,7 +32,7 @@ public class Entity : MonoBehaviour
 	[HideInInspector]
 	public Passive[] equipment;
 	[HideInInspector]
-	public Ability[] abilities;
+	private Ability[] abilities;
 	private List<Status> statusEffects;
 
 	private Animator animator;
@@ -139,6 +139,58 @@ public class Entity : MonoBehaviour
 		srDelayCurr -= Time.deltaTime;
 		if (srDelayCurr <= 0f || shieldRegen < 0f)
 			currentShield += shieldRegen;
+	}
+
+	// Add a passive to this Entity.  If a passive was already at index, it will be
+	// overwritten, and auto-revert itself when cleaned up
+	public void addPassive(Passive p, int index)
+	{
+		foreach(Passive i in equipment)
+		{
+			//duplicate passives not allowed
+			if (i.Equals (p))
+				return;
+		}
+
+		//passive currently at index is auto-reverted when it is dereferenced and destroyed
+		equipment [index] = p;
+		equipment [index].apply ();
+	}
+
+	// Remove a passive from this Entity
+	public void removePassive(Passive p)
+	{
+		for(int i = 0; i < equipment.Length; i++)
+		{
+			if (equipment [i].Equals (p))
+			{
+				equipment [i] = null;
+				return;
+			}
+		}
+	}
+	public void removePassive(int index)
+	{
+		equipment [index] = null;
+	}
+
+	// Add a status to this Entity's status list.  If it's a duplicate, take the 
+	// necessary measures
+	public void addStatus(Status s)
+	{
+		foreach (Status i in statusEffects)
+		{
+			if (i.Equals (s))
+			{
+				if (i.StacksCurrent < i.StacksMax)
+					i.StacksCurrent++;
+				return;
+			}
+		}
+
+		statusEffects.Add (s);
+		s.apply ();
+		OnStatusListUpdated (s);
 	}
 
 	// Play a death animation and take the entity out of play for some time
