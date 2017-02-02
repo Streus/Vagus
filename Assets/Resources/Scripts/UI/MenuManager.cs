@@ -9,6 +9,8 @@ public class MenuManager : MonoBehaviour
 	private Menu prevMenu;
 	private Menu[] menus;
 
+	public ErrorDisplay errDisplay;
+
 	public void Start()
 	{
 		if(menusys == null)
@@ -40,10 +42,20 @@ public class MenuManager : MonoBehaviour
 		currentMenu.IsOpen = true;
 	}
 
-	// REturn to the last menu that was displayed, if there is one
+	// Return to the last menu that was displayed, if there is one
 	public void returnToPreviousMenu()
 	{
 		if (prevMenu != null)
 			showMenu (prevMenu);
+	}
+
+	// Call up an error window and display error text in it.
+	public void displayError(string errorText)
+	{
+		if (errDisplay != null)
+		{
+			errDisplay.gameObject.SetActive (true);
+			errDisplay.displayError (errorText);
+		}
 	}
 }
