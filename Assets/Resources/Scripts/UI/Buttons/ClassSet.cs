@@ -12,12 +12,13 @@ public class ClassSet : MonoBehaviour
 		for (int i = 0; i < perks.Length; i++)
 		{
 			perks [i] = transform.GetChild (1).GetChild (i).GetComponent<PerkDescription> ();
+			perks [i].init ();
 		}
 	}
 
 	public void Update()
 	{
-		foreach (Button b in perks[perks.Length].equipButtons)
+		foreach (Button b in perks[perks.Length - 1].equipButtons)
 			b.interactable = perks [0].chosen;
 	}
 }

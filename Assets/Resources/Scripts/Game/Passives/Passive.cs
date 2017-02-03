@@ -48,6 +48,8 @@ public abstract class Passive
 		desc = "NULL PASSIVE";
 		icon = null;
 
+		setValues ();
+
 		this.subject = null;
 
 		applied = false;
@@ -60,10 +62,13 @@ public abstract class Passive
 		desc = "UNINITIALIZED PASSIVE";
 		icon = null;
 
+		setValues ();
+
 		this.subject = subject;
 
 		applied = false;
 	}
+	protected virtual void setValues() { }
 
 	/* Deconstructors */
 	~Passive()
@@ -107,7 +112,7 @@ public abstract class Passive
 	//TODO more Passive hooks?
 
 	// Create another instance of this Passive with the same subject
-	public abstract Passive Copy (Entity e);
+	public abstract Passive Copy ();
 
 	// Compare this Passive to another
 	public override bool Equals (object obj)

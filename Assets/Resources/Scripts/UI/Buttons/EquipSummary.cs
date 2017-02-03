@@ -15,15 +15,25 @@ public class EquipSummary : MonoBehaviour
 		for(int i = 0; i < displays.Length; i++)
 		{
 			displays [i] = transform.GetChild (i).GetComponent<PassiveDisplay> ();
-			displays [i].passiveIndex = i;
+			displays [i].changePassive(PlayerPerks.passives[i]);
 		}
 	}
 
 	public void changePassive(int index, Passive p)
 	{
 		if (index < PlayerPerks.passives.Length)
+		{
 			PlayerPerks.passives [index] = p;
-		OnSlotChanged (index);
+			displays [index].changePassive (p);
+			OnSlotChanged (index);
+		}
+	}
+
+	public void swapPassives(int index1, int index2)
+	{
+		PlayerPerks.swapPassives (index1, index2);
+		displays [index1].changePassive(PlayerPerks.passives [index1]);
+		displays [index2].changePassive(PlayerPerks.passives [index2]);
 	}
 
 	public event ChangedSlotPassive slotChanged;
