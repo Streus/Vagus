@@ -11,6 +11,8 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 	[SyncVar(hook = "OnThisTeam")]
 	public int playerTeam;
 
+	public SyncListString passives;
+
 	public PlayerSummary summary;
 
 	public override void OnClientEnterLobby ()
@@ -19,6 +21,8 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 		CustomLobbyManager.lobbyManager.NumClientPlayers++;
 
 		summary = LobbyMenu.singleton.addPlayerSummary (this);
+
+		passives = new SyncListString ();
 
 		if (isLocalPlayer)
 			SetupLocal ();
@@ -40,6 +44,14 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 	{
 		OnClientReady (false);
 		LobbyMenu.singleton.localPlayer = this;
+
+		string[] passNames = PlayerPerks.toStringArray (PlayerPerks.passives);
+		for (int i = 0; i < passNames.Length; i++)
+		{
+			passives.Add (passNames [i]);
+		}
+
+		playerName = PlayerPrefs.GetString ("playername", "");
 	}
 
 	public void SetupRemote()
@@ -103,6 +115,12 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 	public void CmdChangeTeam(int team)
 	{
 		playerTeam = team;
+	}
+
+	// Passives mutators
+	public void addToPassives(string passive)
+	{
+		
 	}
 
 	public void OnDestroy()

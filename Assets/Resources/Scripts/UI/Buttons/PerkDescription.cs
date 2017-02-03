@@ -18,19 +18,16 @@ public class PerkDescription : MonoBehaviour
 	public bool chosen;
 	private int thisIndex = -1;
 
-	public void Awake()
+	public void init()
 	{
 		if (perkName == "") // perkName not set.  Don't do anything.
 			return;
 		
-		perk = (Passive)Activator.CreateInstance (Type.GetType (perkName));
+		perk = (Passive)Activator.CreateInstance (Type.GetType ("Passives." + perkName));
 
 		thisIndex = PlayerPerks.isDuplicate (perk, PlayerPerks.passives);
 		chosen = (thisIndex != -1);
-	}
 
-	public void Start()
-	{
 		perkDescription.text = "<i>" + perk.Name + "</i>\n" + perk.Desc;
 		perkIcon.sprite = perk.Icon;
 	}
@@ -38,17 +35,22 @@ public class PerkDescription : MonoBehaviour
 	// Set the ith index of the player's passives to perk
 	public void setPerk(int i)
 	{
-		if (PlayerPerks.isDuplicate (perk, PlayerPerks.passives) != -1)
+		int dupPos = PlayerPerks.isDuplicate (perk, PlayerPerks.passives);
+		if (dupPos != -1)
+		{
+			summary.swapPassives (dupPos, i);
+			thisIndex = i;
 			return;
+		}
 
 		summary.changePassive (i, perk);
-		//PlayerPerks.passives [i] = perk;
 
 		chosen = true;
 		thisIndex = i;
 		thisSlot += new ChangedSlotPassive(removePerk);
 	}
 
+	// Called when the ChangedSlotPassive event is invoked
 	private void removePerk(int i)
 	{
 		if (i != thisIndex)

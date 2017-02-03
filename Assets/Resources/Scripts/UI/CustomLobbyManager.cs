@@ -18,7 +18,7 @@ public class CustomLobbyManager : NetworkLobbyManager
 	}
 
 	/* Instance Methods */
-	public void Start()
+	public void Awake()
 	{
 		//setup singleton
 		lobbyManager = this;
@@ -68,6 +68,7 @@ public static class PlayerPerks
 	// Loads and instantiates passives
 	public static void loadPassives()
 	{
+		passives = new Passive[4];
 		for (int i = 0; i < passives.Length; i++)
 		{
 			string pass = PlayerPrefs.GetString ("passive" + i, "");
@@ -76,13 +77,45 @@ public static class PlayerPerks
 		}
 	}
 
-	// Helper method that checks for duplicates in a string array
+	// Saves each passive in passives as a string in PlayerPrefs
+	public static void savePassives()
+	{
+		for (int i = 0; i < passives.Length; i++)
+		{
+			string pass = passives [i].GetType ().AssemblyQualifiedName;
+			PlayerPrefs.SetString ("passive" + i, pass);
+		}
+	}
+
+	// Helper method that checks for duplicates in a Passive array
 	// returns the index of the duplicate, -1 if there is none
 	public static int isDuplicate(Passive passive, Passive[] passiveList)
 	{
 		for (int i = 0; i < passiveList.Length; i++)
-			if (passiveList[i].Equals (passive))
+			if (passiveList [i] != null && passiveList[i].Equals (passive))
 				return i;
 		return -1;
+	}
+
+	// Helper method that swaps the values of two positions in passives
+	public static void swapPassives(int position1, int position2)
+	{
+		if (!(position1 < passives.Length && position2 < passives.Length))
+			return;
+
+		Passive temp = passives [position1];
+		passives [position1] = passives [position2];
+		passives [position2] = temp;
+	}
+
+	// Helper method that converts an array of Passives into an array of their AssemblyQualifiedNames
+	public static string[] toStringArray(Passive[] passiveList)
+	{
+		string[] aqns = new string[passiveList.Length];
+		for (int i = 0; i < passiveList.Length; i++)
+		{
+			aqns [i] = passiveList [i].GetType ().AssemblyQualifiedName;
+		}
+		return aqns;
 	}
 }

@@ -12,17 +12,22 @@ public class MatchSetupFunctions : MonoBehaviour
 
 	public void Start()
 	{
-		//TODO maybe include support for saving default address & port
+		IPInputField.text = PlayerPrefs.GetString ("defaultip", "127.0.0.1");
+		updateServerIP ();
+		portInputField.text = "" + PlayerPrefs.GetInt ("defaultport", 25000);
+		updateServerPort ();
 	}
 
 	public void updateServerIP()
 	{
-		NetworkLobbyManager.singleton.networkAddress = IPInputField.text;
+		CustomLobbyManager.lobbyManager.networkAddress = IPInputField.text;
+		PlayerPrefs.SetString ("defaultip", CustomLobbyManager.lobbyManager.networkAddress);
 	}
 
 	public void updateServerPort()
 	{
-		NetworkLobbyManager.singleton.networkPort = int.Parse(portInputField.text);
+		CustomLobbyManager.lobbyManager.networkPort = int.Parse(portInputField.text);
+		PlayerPrefs.SetInt ("defaultip", CustomLobbyManager.lobbyManager.networkPort);
 	}
 
 	public void updateServerPassword()
@@ -32,13 +37,13 @@ public class MatchSetupFunctions : MonoBehaviour
 
 	public void connectToServer()
 	{
-		NetworkLobbyManager.singleton.StartClient();
+		CustomLobbyManager.lobbyManager.StartClient();
 		MenuManager.menusys.showMenu(lobbyMenu);
 	}
 
 	public void hostServer()
 	{
-		NetworkLobbyManager.singleton.StartHost();
+		CustomLobbyManager.lobbyManager.StartHost();
 		MenuManager.menusys.showMenu(lobbyMenu);
 	}
 }

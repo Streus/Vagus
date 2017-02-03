@@ -1,15 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Markers : MonoBehaviour {
+namespace Passives
+{
+	public class Markers : Passive //TODO uncompleted
+	{
+		/* Constructors */
+		public Markers() : base() { }
+		public Markers(Entity subject) : base(subject)
+		{
+			
+		}
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+		protected override void setValues ()
+		{
+			passive_id = 1;
+
+			name = "Markers";
+			desc = "Leave a marker at your position once every five seconds.  A maximum of 3 markers can be active at a time.";
+			icon = Resources.Load<Sprite>("Sprites/UI/Passive Icons/position-marker");
+		}
+
+		public override Passive Copy ()
+		{
+			return new Markers (subject);
+		}
 	}
 }
