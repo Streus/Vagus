@@ -41,6 +41,8 @@ public class CustomLobbyManager : NetworkLobbyManager
 	// Play scene has finished loading.  Apply custom values from lobbyPlayer to gamePlayer
 	public override bool OnLobbyServerSceneLoadedForPlayer (GameObject lobbyPlayer, GameObject gamePlayer)
 	{
+		base.OnLobbyServerSceneLoadedForPlayer (lobbyPlayer, gamePlayer);
+
 		CustomLobbyPlayer lp = lobbyPlayer.GetComponent<CustomLobbyPlayer> ();
 		Entity playerStats = gamePlayer.GetComponent<Entity> ();
 
@@ -51,7 +53,10 @@ public class CustomLobbyManager : NetworkLobbyManager
 		playerStats.faction = (Faction)(lp.playerTeam + 1);
 
 		//set the player's passives
-		//TODO
+		for(int i = 0; i < playerStats.equipment.Length; i++)
+		{
+			playerStats.addPassive((Passive)Activator.CreateInstance (Type.GetType (lp.passives [i]), playerStats), i);
+		}
 
 		return true;
 	}
@@ -59,8 +64,7 @@ public class CustomLobbyManager : NetworkLobbyManager
 
 }
 
-// Holds the Passives to be applied to the local player on game start as strings of the 
-// Passive class names.
+// Holds the Passives to be applied to the local player on game start
 public static class PlayerPerks
 {
 	public static Passive[] passives;
@@ -114,7 +118,10 @@ public static class PlayerPerks
 		string[] aqns = new string[passiveList.Length];
 		for (int i = 0; i < passiveList.Length; i++)
 		{
-			aqns [i] = passiveList [i].GetType ().AssemblyQualifiedName;
+			if (passiveList [i] != null)
+				aqns [i] = passiveList [i].GetType ().AssemblyQualifiedName;
+			else
+				aqns [i] = "";
 		}
 		return aqns;
 	}

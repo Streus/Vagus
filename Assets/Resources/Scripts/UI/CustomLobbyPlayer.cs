@@ -11,7 +11,7 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 	[SyncVar(hook = "OnThisTeam")]
 	public int playerTeam;
 
-	public SyncListString passives;
+	public SyncListString passives = new SyncListString ();
 
 	public PlayerSummary summary;
 
@@ -21,8 +21,7 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 		CustomLobbyManager.lobbyManager.NumClientPlayers++;
 
 		summary = LobbyMenu.singleton.addPlayerSummary (this);
-
-		passives = new SyncListString ();
+		passives.Callback = OnPassivesChanged;
 
 		if (isLocalPlayer)
 			SetupLocal ();
@@ -45,13 +44,7 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 		OnClientReady (false);
 		LobbyMenu.singleton.localPlayer = this;
 
-		string[] passNames = PlayerPerks.toStringArray (PlayerPerks.passives);
-		for (int i = 0; i < passNames.Length; i++)
-		{
-			passives.Add (passNames [i]);
-		}
-
-		playerName = PlayerPrefs.GetString ("playername", "");
+		CmdChangeName(PlayerPrefs.GetString ("playername", ""));
 	}
 
 	public void SetupRemote()
@@ -70,6 +63,12 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 		if (readyState)
 		{
 			summary.readyIndicator.color = Color.cyan;
+
+			string[] passNames = PlayerPerks.toStringArray (PlayerPerks.passives);
+			for (int i = 0; i < passNames.Length; i++)
+			{
+				CmdSetPassive (i, passNames [i]);
+			}
 		}
 		else
 		{
@@ -86,6 +85,7 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 	public void changeName(string name)
 	{
 		CmdChangeName (name);
+		PlayerPrefs.SetString ("playername", playerName);
 	}
 	[Command]
 	public void CmdChangeName(string name)
@@ -118,7 +118,16 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 	}
 
 	// Passives mutators
-	public void addToPassives(string passive)
+	public void setPassive(int index, string passive)
+	{
+		CmdSetPassive (index, passive);
+	}
+	[Command]
+	public void CmdSetPassive(int index, string passive)
+	{
+		passives.Insert(index, passive);
+	}
+	public void OnPassivesChanged(SyncListString.Operation op, int index)
 	{
 		
 	}

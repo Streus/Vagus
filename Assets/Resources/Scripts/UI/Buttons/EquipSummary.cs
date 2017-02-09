@@ -36,6 +36,11 @@ public class EquipSummary : MonoBehaviour
 		displays [index2].changePassive(PlayerPerks.passives [index2]);
 	}
 
+	public void savePassives()
+	{
+		PlayerPerks.savePassives ();
+	}
+
 	public event ChangedSlotPassive slotChanged;
 	public void OnSlotChanged(int slotNumber)
 	{

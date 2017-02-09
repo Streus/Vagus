@@ -147,6 +147,9 @@ public class Entity : MonoBehaviour
 	{
 		foreach(Passive i in equipment)
 		{
+			if (i == null)
+				continue;
+			
 			//duplicate passives not allowed
 			if (i.Equals (p))
 				return;
