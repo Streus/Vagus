@@ -14,6 +14,7 @@ public class Player : Controller
 	{
 		CameraControl.mainCam.FollowTarget = gameObject;
 		Debug.Log(CameraControl.mainCam.FollowTarget.name + " is being followed by the camera.");
+		HUDControl.hud.subject = self;
 	}
 
 	public override void Awake()
