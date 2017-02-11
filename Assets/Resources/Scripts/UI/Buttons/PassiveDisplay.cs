@@ -5,10 +5,10 @@ using UnityEngine.EventSystems;
 
 public class PassiveDisplay : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-	//TODO popup info prefab to instantiate and display passive info
-
 	public Image displayIcon;
 	private Passive thisPass;
+
+	private PopupInfo popup;
 
 	public void changePassive(Passive p)
 	{
@@ -19,13 +19,16 @@ public class PassiveDisplay : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
 	public void OnPointerEnter(PointerEventData data)
 	{
-		//TODO create popup
+		GameObject pu = (GameObject)Instantiate (Resources.Load<GameObject> ("Prefabs/UI/Popup Info"));
+		pu.transform.SetParent (transform, false);
+		popup = pu.GetComponent<PopupInfo> ();
+		popup.changeText (thisPass.ToString ());
 		Debug.Log("A totally cool popup should appear right about now!");
 	}
 
 	public void OnPointerExit(PointerEventData data)
 	{
-		//TODO destroy popup
+		Destroy (popup.gameObject);
 		Debug.Log("Lame. The popup is gone.");
 	}
 }

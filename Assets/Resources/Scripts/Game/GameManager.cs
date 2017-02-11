@@ -6,6 +6,22 @@ public class GameManager : NetworkBehaviour
 {
 	public static GameManager manager;
 
+	public static string[] nodeNames = 
+	{
+		"abc", "akd", "ake", "afh",
+		"bgi", "bgc", "bel", "bed",
+		"cag", "cgf", "cjh", "cil",
+		"dbh", "dlb", "dka", "dgk",
+		"efg", "eak", "ehj", "ecg",
+		"fcb", "fck", "fcd", "fce",
+		"gjc", "gkh", "gcl", "gcj",
+		"hcd", "hce", "hci", "hkj",
+		"iaf", "ihk", "ild", "ieg",
+		"jcf", "jkh", "jhe", "jla",
+		"kfg", "kfe", "kgd", "kae",
+		"lic", "leb", "lcg", "lcj"
+	};
+
 	/* Instance Vars */
 	[SyncVar(hook = "OnGameState")]
 	public int gameState;
@@ -27,6 +43,8 @@ public class GameManager : NetworkBehaviour
 	{
 		if(manager == null)
 			manager = this;
+
+
 	}
 
 	public void Update()
