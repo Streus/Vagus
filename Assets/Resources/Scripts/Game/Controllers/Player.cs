@@ -13,6 +13,7 @@ public class Player : Controller
 	public override void OnStartLocalPlayer()
 	{
 		CameraControl.mainCam.FollowTarget = gameObject;
+		CameraControl.mainCam.changeCamPosition (CameraControl.playProfile);
 		Debug.Log(CameraControl.mainCam.FollowTarget.name + " is being followed by the camera.");
 		HUDControl.hud.subject = self;
 	}
@@ -29,9 +30,9 @@ public class Player : Controller
 
 	public void Update()
 	{
-		if (!isLocalPlayer)
+		if(isNotInControl())
 			return;
-
+		
 		float dx = -xSensitivity * Input.GetAxis("Mouse X");
 		//float dy = -ySensitivity * Input.GetAxis("Mouse Y");
 		transform.Rotate(0, 0, dx);
@@ -40,7 +41,7 @@ public class Player : Controller
 	// Movement
 	public void FixedUpdate()
 	{
-		if(!isLocalPlayer)
+		if(isNotInControl())
 			return;
 
 		//temporary 
@@ -54,6 +55,13 @@ public class Player : Controller
 			physbody.AddForce (transform.right * self.speed);
 
 		engEmmisEff.SetActive (Input.GetKey (KeyCode.W));
+	}
+
+	public bool isNotInControl()
+	{
+		return !isLocalPlayer ||
+			GameManager.manager.inPauseMenu ||
+			GameManager.manager.gameState == (int)GameState.postgame;
 	}
 
 	public void OnDestroy()

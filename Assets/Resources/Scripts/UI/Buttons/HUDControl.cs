@@ -6,6 +6,7 @@ public class HUDControl : MonoBehaviour
 {
 	public static HUDControl hud;
 
+	/* Instance Vars */
 	public Text roundNumber;
 	public Text nextNodeDisplay;
 	public Text score;
@@ -17,6 +18,7 @@ public class HUDControl : MonoBehaviour
 	public Image healthBar;
 	public Image shieldsBar;
 
+	/* Instance Methods */
 	public void Awake()
 	{
 		if (hud == null)
@@ -27,7 +29,7 @@ public class HUDControl : MonoBehaviour
 
 	public void Update()
 	{
-		roundNumber.text = "Round " + GameManager.manager.round;
+		roundNumber.text = "Round\n" + GameManager.manager.round + "/24";
 
 		//TODO implement slow reveal of nextNodeName value
 		nextNodeDisplay.text = GameManager.manager.nextNodeName;
@@ -36,7 +38,7 @@ public class HUDControl : MonoBehaviour
 		int s2 = GameManager.manager.teamBScore;
 		score.text = "<color=#ff7700ff>" + s1 + "</color>:<color=#0000ffff>" + s2 + "</color>";
 
-		int mt =  Mathf.RoundToInt (GameManager.manager.getMatchTime ());
+		int mt =  Mathf.RoundToInt (GameManager.manager.matchTime);
 		int matchMinutes = mt / 60;
 		int matchSeconds = mt % 60;
 		matchTime.text = matchMinutes.ToString("00") + ":" + matchSeconds.ToString("00");

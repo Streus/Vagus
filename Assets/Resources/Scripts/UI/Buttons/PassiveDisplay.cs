@@ -19,16 +19,12 @@ public class PassiveDisplay : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
 	public void OnPointerEnter(PointerEventData data)
 	{
-		GameObject pu = (GameObject)Instantiate (Resources.Load<GameObject> ("Prefabs/UI/Popup Info"));
-		pu.transform.SetParent (transform, false);
-		popup = pu.GetComponent<PopupInfo> ();
-		popup.changeText (thisPass.ToString ());
-		Debug.Log("A totally cool popup should appear right about now!");
+		Canvas canvas = transform.root.GetComponent<Canvas> ().rootCanvas;
+		popup = PopupInfo.createPopup (thisPass.ToString (), canvas, transform.position);
 	}
 
 	public void OnPointerExit(PointerEventData data)
 	{
 		Destroy (popup.gameObject);
-		Debug.Log("Lame. The popup is gone.");
 	}
 }
