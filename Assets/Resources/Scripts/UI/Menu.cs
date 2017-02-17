@@ -9,7 +9,11 @@ public class Menu : MonoBehaviour
 	public bool IsOpen
 	{
 		get{ return animator.GetBool("IsOpen"); }
-		set{ animator.SetBool("IsOpen", value); }
+		set
+		{
+			animator.SetBool("IsOpen", value);
+			OnFocusChanged (value);
+		}
 	}
 
 	public void Awake()
@@ -26,5 +30,13 @@ public class Menu : MonoBehaviour
 	{
 		//if this menu is not open, make it uninteractable
 		canvasGroup.blocksRaycasts = canvasGroup.interactable = animator.GetCurrentAnimatorStateInfo(0).IsName("Open");
+	}
+
+	public delegate void FocusChanged(bool inFocus);
+	public event FocusChanged changedFocus;
+	public void OnFocusChanged(bool inFocus)
+	{
+		if (changedFocus != null)
+			changedFocus (inFocus);
 	}
 }

@@ -13,7 +13,8 @@ public class AbilitySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 	public GameObject chargesIndicator;
 	public Text chargesText;
 
-	private GameObject popupInfo;
+	private PopupInfo popupInfo;
+	private bool mouseHovering;
 
 	public void Start()
 	{
@@ -48,13 +49,29 @@ public class AbilitySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{
-		//TODO ability info popup
-		//maybe have a time delay between mouse over and display
-		Debug.Log ("Ability info popup should appear now.");
+		mouseHovering = true;
+		Invoke ("showPopup", 1f);
+	}
+
+	private void showPopup()
+	{
+		if (mouseHovering)
+		{
+			string text;
+			if (ability != null)
+				text = ability.ToString ();
+			else
+				text = "This slot is empty!";
+			Canvas canvas = transform.root.GetComponent<Canvas> ().rootCanvas;
+			popupInfo = PopupInfo.createPopup (text, canvas, transform.position);
+
+		}
 	}
 
 	public void OnPointerExit(PointerEventData eventData)
 	{
-		Debug.Log ("Ability popup info should disappear");
+		mouseHovering = false;
+		if (popupInfo != null)
+			Destroy (popupInfo.gameObject);
 	}
 }

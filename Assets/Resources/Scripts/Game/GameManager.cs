@@ -6,7 +6,7 @@ public class GameManager : NetworkBehaviour
 {
 	public static GameManager manager;
 
-	public static string[] nodeNames = 
+	public static readonly string[] nodeNames = 
 	{
 		"abc", "akd", "ake", "afh",
 		"bgi", "bgc", "bel", "bed",
@@ -38,33 +38,102 @@ public class GameManager : NetworkBehaviour
 	[SyncVar(hook = "OnRound")]
 	public int round;
 
+	[SyncVar(hook = "OnMatchTime")]
+	public float matchTime; //ONLY TO BE SYNCED ON PREGAME START
+
+	[HideInInspector]
+	public GameObject[] nodes;
+
+	public bool canEditNodes;
+
+	public bool inPauseMenu;
+	public Menu pauseMenu;
+	public Menu postgameMenu;
+
 	/* Instance Methods */
 	public void Awake()
 	{
+		//setup singleton
 		if(manager == null)
 			manager = this;
 
+		inPauseMenu = false;
 
+		//spawn nodes TODO only test version
+		//nodes = new GameObject[1];
+		//GameObject nodePrefab = Resources.Load<GameObject>("Prefabs/Game/Misc/Node");
+		//for (int i = 0; i < nodes.Length; i++)
+		//{
+		//	nodes [i] = (GameObject)Instantiate (nodePrefab, Vector3.zero, Quaternion.identity);
+		//	CaptureNode cn = nodes [i].GetComponent<CaptureNode> ();
+		//	cn.team = 0;
+		//	NetworkServer.Spawn (nodes [i]);
+		//}
+
+		//setup initial game state
+		CmdChangeGameState ((int)GameState.pregame);
 	}
 
 	public void Update()
 	{
-		
+		matchTime += Time.deltaTime;
+
+		if (Input.GetKeyDown (KeyCode.Escape) && 
+			((GameState)gameState == GameState.round || (GameState)gameState == GameState.pregame))
+			togglePause ();
+
+		switch ((GameState)gameState)
+		{
+		case GameState.pregame:
+			
+			break;
+		case GameState.round:
+			
+			break;
+		case GameState.postgame:
+			
+			break;
+		}
 	}
 
-	public float getMatchTime()
+	public void togglePause()
 	{
-		return Time.timeSinceLevelLoad;
+		inPauseMenu = !inPauseMenu;
+		if (inPauseMenu)
+		{
+			MenuManager.menusys.showMenu (pauseMenu);
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
+		}
+		else
+		{
+			MenuManager.menusys.returnToPreviousMenu ();
+			Cursor.lockState = CursorLockMode.Locked;
+			Cursor.visible = false;
+		}
 	}
 
 	// GameState mutators
 	public void OnGameState(int state)
 	{
 		gameState = state;
-	}
-	public void changeGameState(int state)
-	{
-		CmdChangeGameState(state);
+		switch ((GameState)state)
+		{
+		case GameState.pregame:
+			//begin a countdown to first round start, then move to pause
+			CmdChangeMatchTime (0f);
+			togglePause ();
+			break;
+		case GameState.round:
+			//default behavior.  move into pause when asked.  move into postgame when win condition is met
+
+			break;
+		case GameState.postgame:
+			//display end-of-game stats, allow for replay
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
+			break;
+		}
 	}
 	[Command]
 	public void CmdChangeGameState(int state)
@@ -77,10 +146,6 @@ public class GameManager : NetworkBehaviour
 	{
 		teamAScore = score;
 	}
-	public void changeTeamAScore(int score)
-	{
-		CmdChangeTeamAScore (score);
-	}
 	[Command]
 	public void CmdChangeTeamAScore(int score)
 	{
@@ -91,10 +156,6 @@ public class GameManager : NetworkBehaviour
 	public void OnTeamBScore(int score)
 	{
 		teamBScore = score;
-	}
-	public void changeTeamBScore(int score)
-	{
-		CmdChangeTeamBScore (score);
 	}
 	[Command]
 	public void CmdChangeTeamBScore(int score)
@@ -107,10 +168,6 @@ public class GameManager : NetworkBehaviour
 	{
 		nextNodeName = name;
 	}
-	public void changeNextNodeName(string name)
-	{
-		CmdChangeNextNodeName (name);
-	}
 	[Command]
 	public void CmdChangeNextNodeName(string name)
 	{
@@ -122,14 +179,22 @@ public class GameManager : NetworkBehaviour
 	{
 		this.round = round;
 	}
-	public void changeRound(int round)
-	{
-		CmdChangeRound (round);
-	}
 	[Command]
 	public void CmdChangeRound(int round)
 	{
 		this.round = round;
+	}
+
+	// Match Time mutators
+	public void OnMatchTime(float time)
+	{
+		if(time > matchTime)
+			matchTime = time;
+	}
+	[Command]
+	public void CmdChangeMatchTime(float time)
+	{
+		matchTime = time;
 	}
 }
 
@@ -137,6 +202,5 @@ public enum GameState
 {
 	pregame,
 	round,
-	postgame,
-	pause
+	postgame
 }
