@@ -39,7 +39,7 @@ public class GameManager : NetworkBehaviour
 	public int round;
 
 	[SyncVar(hook = "OnMatchTime")]
-	public float matchTime; //ONLY TO BE SYNCED ON PREGAME START
+	public float matchTime;
 
 	[HideInInspector]
 	public GameObject[] nodes;
@@ -76,7 +76,8 @@ public class GameManager : NetworkBehaviour
 
 	public void Update()
 	{
-		matchTime += Time.deltaTime;
+		if(isServer)
+			matchTime += Time.deltaTime;
 
 		if (Input.GetKeyDown (KeyCode.Escape) && 
 			((GameState)gameState == GameState.round || (GameState)gameState == GameState.pregame))
@@ -121,7 +122,8 @@ public class GameManager : NetworkBehaviour
 		{
 		case GameState.pregame:
 			//begin a countdown to first round start, then move to pause
-			CmdChangeMatchTime (0f);
+			if (isServer)
+				matchTime = 0f;
 			togglePause ();
 			break;
 		case GameState.round:
@@ -185,16 +187,10 @@ public class GameManager : NetworkBehaviour
 		this.round = round;
 	}
 
-	// Match Time mutators
+	// MatchTime Mutators
 	public void OnMatchTime(float time)
 	{
-		if(time > matchTime)
-			matchTime = time;
-	}
-	[Command]
-	public void CmdChangeMatchTime(float time)
-	{
-		matchTime = time;
+		this.matchTime = time;
 	}
 }
 

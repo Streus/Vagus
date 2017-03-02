@@ -11,6 +11,7 @@ public class ExitButton : MonoBehaviour
 
 	public void exitMatch()
 	{
+		//TODO this broke
 		if (Network.isServer)
 			CustomLobbyManager.Shutdown ();
 		CustomLobbyManager.lobbyManager.StopClient ();

@@ -50,7 +50,7 @@ public class CustomLobbyManager : NetworkLobbyManager
 		gamePlayer.name = lp.playerName;
 
 		//set the player's faction depending on team
-		playerStats.faction = (Faction)(lp.playerTeam + 1);
+		playerStats.faction = (Faction)(lp.playerTeam);
 
 		//set the player's passives
 		for(int i = 0; i < playerStats.equipment.Length; i++)

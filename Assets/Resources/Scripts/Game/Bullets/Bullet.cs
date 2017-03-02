@@ -88,6 +88,28 @@ public class Bullet : MonoBehaviour
 		other.OnEntityDamaged();
 	}
 
+	// Convert a faction into a unique color that can be use in UI elements
+	public static Color factionColor(Faction faction)
+	{
+		switch (faction)
+		{
+		case Faction.enemy:
+			return Color.red;
+		case Faction.neutral:
+			return Color.grey;
+		case Faction.player_1:
+			return new Color(1f, 0.5f, 0f, 1f);
+		case Faction.player_2:
+			return Color.green;
+		case Faction.player_3:
+			return Color.magenta;
+		case Faction.player_4:
+			return Color.yellow;
+		default:
+			return Color.white;
+		}
+	}
+
 	/* Instance Methods */
 	public void Awake()
 	{

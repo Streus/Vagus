@@ -97,15 +97,9 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 	public void OnThisTeam(int team)
 	{
 		playerTeam = team;
-		switch (team)
-		{
-		case 0:
-			summary.teamIndicator.color = new Color(1f, 0.5f, 0f, 1f);
-			break;
-		case 1:
-			summary.teamIndicator.color = Color.blue;
-			break;
-		}
+
+		Color newColor = Bullet.factionColor ((Faction)playerTeam);
+		summary.teamIndicator.color = newColor;
 	}
 	public void changeTeam(int team)
 	{
