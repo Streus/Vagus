@@ -20,7 +20,7 @@ public class CameraControl : MonoBehaviour
 	//camera child variables
 	private CameraProfile camProfile;
 
-	private Transform cam;
+	public Transform cam{ get; private set; }
 
 	//camera shake varibles
 	private float intensity;
