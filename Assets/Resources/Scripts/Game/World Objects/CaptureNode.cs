@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 public class CaptureNode : MonoBehaviour
 {
-	public Faction team;
+	public int team;
 
 	private CaptureArea captureZone;
 

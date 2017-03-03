@@ -42,7 +42,7 @@ public class HUDControl : MonoBehaviour
 		{
 			currentNode = value;
 			currentNodeSummary.SetActive (currentNode != null);
-			if(currentNodeSummary.active)
+			if(currentNodeSummary.activeSelf)
 				currentNodeName.text = currentNode.name;
 		}
 	}
