@@ -22,13 +22,13 @@ public class PauseControl : MonoBehaviour
 		//fill the nodeOverlay with NodeHighlights
 		for (int i = 0; i < GameManager.manager.nodes.Length; i++)
 		{
-			GameObject node = GameManager.manager.nodes [i];
+			CaptureNode node = GameManager.manager.nodes [i];
 			if (node != null)
 			{
-				CaptureNode nodeVars = node.GetComponent<CaptureNode> ();
-				NodeHighlight.create (node, nodeOverlay.transform, (int)nodeVars.team);
+				NodeHighlight.create (node, nodeOverlay.transform, node.team);
 			}
 		}
+		nodeOverlay.SetActive (false);
 	}
 
 	public void Update()

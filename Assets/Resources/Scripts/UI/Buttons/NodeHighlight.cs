@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class NodeHighlight : MonoBehaviour
 {
-	public GameObject targetNode;
+	public CaptureNode targetNode;
 
 	public Image teamIndicator;
 	public Text nodeNameIndicator;
@@ -14,10 +14,10 @@ public class NodeHighlight : MonoBehaviour
 
 	private int team;
 
-	public static NodeHighlight create(GameObject targetNode, Transform displayArea, int team)
+	public static NodeHighlight create(CaptureNode targetNode, Transform displayArea, int team)
 	{
 		GameObject go = (GameObject)Instantiate (
-			                Resources.Load<GameObject> ("Prefabs/UI/Buttons/NodeHighlight"),
+			                Resources.Load<GameObject> ("Prefabs/UI/NodeHighlight"),
 			                displayArea, false);
 		NodeHighlight nh = go.GetComponent<NodeHighlight> ();
 		nh.parentRect = displayArea.GetComponent<RectTransform> ();
@@ -35,28 +35,19 @@ public class NodeHighlight : MonoBehaviour
 
 	public void changeTeam(int team)
 	{
-		Color color = Color.white;
-		switch (team)
-		{
-		case 0:
-			color = new Color(1f, 0.5f, 0f, 1f);
-			break;
-		case 1:
-			color = Color.blue;
-			break;
-		}
-		teamIndicator.color = color;
+		teamIndicator.color = Bullet.factionColor((Faction)team);
+		this.team = team;
 	}
 
-	public void LateUpdate()
+	public void FixedUpdate()
 	{
 		if (targetNode != null)
 		{
-			Vector3 targetCoords = Camera.main.WorldToScreenPoint (targetNode.transform.position);
-			Vector2 convPosition = new Vector2 (
-				                       (targetCoords.x * parentRect.sizeDelta.x) - (parentRect.sizeDelta.x * 0.5f),
-				                       (targetCoords.y * parentRect.sizeDelta.y) - (parentRect.sizeDelta.y * 0.5f));
-			rect.anchoredPosition = convPosition;
+			Vector3 screenCoords = Camera.main.WorldToScreenPoint (targetNode.transform.position);
+
+			Vector3 convPos = Vector3.zero;
+			RectTransformUtility.ScreenPointToWorldPointInRectangle (parentRect, (Vector2)screenCoords, Camera.main, out convPos);
+			rect.position = convPos;
 		}
 		else
 		{

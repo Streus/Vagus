@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.Networking;
 using System;
 
@@ -8,14 +9,7 @@ public class CustomLobbyManager : NetworkLobbyManager
 	public static CustomLobbyManager lobbyManager;
 
 	/* Instance Vars */
-	private int numClientPlayers;
-
-	/* Accessors */
-	public int NumClientPlayers
-	{
-		get{ return numClientPlayers; }
-		set{ numClientPlayers = value; }
-	}
+	public List<GameObject> players = new List<GameObject>();
 
 	/* Instance Methods */
 	public void Awake()
@@ -57,6 +51,8 @@ public class CustomLobbyManager : NetworkLobbyManager
 		{
 			playerStats.addPassive((Passive)Activator.CreateInstance (Type.GetType (lp.passives [i]), playerStats), i);
 		}
+
+		players.Add (gamePlayer);
 
 		return true;
 	}

@@ -100,13 +100,13 @@ public class Bullet : MonoBehaviour
 		case Faction.player_1:
 			return new Color(1f, 0.5f, 0f, 1f);
 		case Faction.player_2:
-			return Color.green;
+			return new Color(0f, 0.8f, 0f, 1f);
 		case Faction.player_3:
 			return Color.magenta;
 		case Faction.player_4:
-			return Color.yellow;
+			return new Color(0f, 0f, 1f, 1f);
 		default:
-			return Color.white;
+			return Color.black;
 		}
 	}
 

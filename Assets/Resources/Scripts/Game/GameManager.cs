@@ -6,7 +6,7 @@ public class GameManager : NetworkBehaviour
 {
 	public static GameManager manager;
 
-	public static readonly string[] nodeNames = 
+	private static string[] nodeNames = 
 	{
 		"abc", "akd", "ake", "afh",
 		"bgi", "bgc", "bel", "bed",
@@ -42,7 +42,7 @@ public class GameManager : NetworkBehaviour
 	public float matchTime;
 
 	[HideInInspector]
-	public GameObject[] nodes;
+	public CaptureNode[] nodes;
 
 	public bool canEditNodes;
 
@@ -60,18 +60,37 @@ public class GameManager : NetworkBehaviour
 		inPauseMenu = false;
 
 		//spawn nodes TODO only test version
-		//nodes = new GameObject[1];
-		//GameObject nodePrefab = Resources.Load<GameObject>("Prefabs/Game/Misc/Node");
-		//for (int i = 0; i < nodes.Length; i++)
-		//{
-		//	nodes [i] = (GameObject)Instantiate (nodePrefab, Vector3.zero, Quaternion.identity);
-		//	CaptureNode cn = nodes [i].GetComponent<CaptureNode> ();
-		//	cn.team = 0;
-		//	NetworkServer.Spawn (nodes [i]);
-		//}
+		nodes = new CaptureNode[3];
+		shuffleNodeNames (5);
+		GameObject nodePrefab = Resources.Load<GameObject>("Prefabs/Game/Misc/Node");
+		float nodeX = 0f;
+		float nodeY = 100f;
+		for (int i = 0; i < nodes.Length; i++)
+		{
+			GameObject node = (GameObject)Instantiate (nodePrefab, new Vector3(nodeX, nodeY + 50f * i, 0f), Quaternion.identity);
+			nodes [i] = node.GetComponent<CaptureNode> ();
+			nodes[i].team = 0;
+			nodes [i].name = nodeNames [i];
+			NetworkServer.Spawn (nodes [i].gameObject);
+		}
 
 		//setup initial game state
 		CmdChangeGameState ((int)GameState.pregame);
+	}
+
+	// Randomly swaps the elements of nodeNames
+	private void shuffleNodeNames(int permutations)
+	{
+		for (int i = 0; i < permutations; i++)
+		{
+			for (int j = 0; j < nodeNames.Length; j++)
+			{
+				int randPos = (int)(Random.value * (nodeNames.Length - 1));
+				string temp = nodeNames [j];
+				nodeNames [j] = nodeNames [randPos];
+				nodeNames [randPos] = temp;
+			}
+		}
 	}
 
 	public void Update()

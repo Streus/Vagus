@@ -18,7 +18,6 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 	public override void OnClientEnterLobby ()
 	{
 		base.OnClientEnterLobby ();
-		CustomLobbyManager.lobbyManager.NumClientPlayers++;
 
 		summary = LobbyMenu.singleton.addPlayerSummary (this);
 		passives.Callback = OnPassivesChanged;
@@ -129,6 +128,5 @@ public class CustomLobbyPlayer : NetworkLobbyPlayer
 	public void OnDestroy()
 	{
 		LobbyMenu.singleton.removePlayerSummary (this);
-		CustomLobbyManager.lobbyManager.NumClientPlayers--;
 	}
 }

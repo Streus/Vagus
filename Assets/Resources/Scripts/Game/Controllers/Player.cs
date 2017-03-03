@@ -8,14 +8,15 @@ public class Player : Controller
 
 	//double tap variables
 
-	private GameObject engEmmisEff;
-
 	public override void OnStartLocalPlayer()
 	{
 		CameraControl.mainCam.FollowTarget = gameObject;
 		CameraControl.mainCam.changeCamPosition (CameraControl.playProfile);
 		Debug.Log(CameraControl.mainCam.FollowTarget.name + " is being followed by the camera.");
 		HUDControl.hud.subject = self;
+
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
 	}
 
 	public override void Awake()
@@ -23,9 +24,6 @@ public class Player : Controller
 		base.Awake();
 		xSensitivity = 10f;
 		ySensitivity = 10f;
-
-		engEmmisEff = transform.GetChild (0).gameObject;
-		engEmmisEff.SetActive (false);
 	}
 
 	public void Update()
@@ -53,8 +51,6 @@ public class Player : Controller
 			physbody.AddForce (transform.up * -self.speed);
 		if (Input.GetKey (KeyCode.D))
 			physbody.AddForce (transform.right * self.speed);
-
-		engEmmisEff.SetActive (Input.GetKey (KeyCode.W));
 	}
 
 	public bool isNotInControl()
@@ -69,5 +65,7 @@ public class Player : Controller
 		string str = CameraControl.mainCam.FollowTarget.name;
 		CameraControl.mainCam.FollowTarget = null;
 		Debug.Log(str + " reliquished control of the camera.");
+
+		CustomLobbyManager.lobbyManager.players.Remove (gameObject);
 	}
 }
