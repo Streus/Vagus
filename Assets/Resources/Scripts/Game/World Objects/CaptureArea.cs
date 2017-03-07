@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class CaptureArea : MonoBehaviour
+public class CaptureArea : NetworkBehaviour
 {
-	[SerializeField]
-	public int captureValue{ get; private set; }
+	[SyncVar(hook = "OnCaptureValue")]
+	public int captureValue;
 	[SerializeField]
 	private int captureSpeed;
 	private int dValue;
@@ -17,6 +18,16 @@ public class CaptureArea : MonoBehaviour
 	private List<Entity> competitors;
 
 	private CaptureNode thisNode;
+
+	public void OnCaptureValue(int capVal)
+	{
+		this.captureValue = capVal;
+	}
+	[Command]
+	public void CmdChangeCaptureValue(int capVal)
+	{
+		this.captureValue = capVal;
+	}
 
 	public void Awake()
 	{
@@ -44,6 +55,9 @@ public class CaptureArea : MonoBehaviour
 			{
 				dValue = captureValue = 0;
 				capturingTeam = Faction.neutral;
+				int winTeam = winningTeam ();
+				if (winTeam != -1 && winTeam != -2)
+					setCaptureState ((Faction)winTeam);
 			}
 		}
 	}
@@ -61,26 +75,7 @@ public class CaptureArea : MonoBehaviour
 		if (con.isLocalPlayer)
 			HUDControl.hud.CurrentNode = thisNode;
 
-		if (capturingTeam == Faction.neutral)
-		{
-			capturingTeam = ent.faction;
-			dValue = captureSpeed;
-		}
-		else if (capturingTeam != ent.faction)
-		{
-			if (areCompetitorsOfFaction (capturingTeam))
-				dValue = 0;
-			else
-				dValue = -captureSpeed;
-		}
-		else if (capturingTeam == ent.faction)
-		{
-			int wt = winningTeam ();
-			if (wt == -1)
-				dValue = 0;
-			else
-				dValue = captureSpeed;
-		}
+		setCaptureState (ent.faction);
 	}
 
 	public void OnTriggerStay2D(Collider2D col)
@@ -111,6 +106,30 @@ public class CaptureArea : MonoBehaviour
 		else if (winTeam == -2 || (Faction)winTeam != capturingTeam)
 			dValue = -captureSpeed;
 		
+	}
+
+	private void setCaptureState(Faction justEnteredFaction)
+	{
+		if (capturingTeam == Faction.neutral)
+		{
+			capturingTeam = justEnteredFaction;
+			dValue = captureSpeed;
+		}
+		else if (capturingTeam != justEnteredFaction)
+		{
+			if (areCompetitorsOfFaction (capturingTeam))
+				dValue = 0;
+			else
+				dValue = -captureSpeed;
+		}
+		else if (capturingTeam == justEnteredFaction)
+		{
+			int wt = winningTeam ();
+			if (wt == -1)
+				dValue = 0;
+			else
+				dValue = captureSpeed;
+		}
 	}
 
 	private bool areCompetitorsOfFaction(Faction faction)

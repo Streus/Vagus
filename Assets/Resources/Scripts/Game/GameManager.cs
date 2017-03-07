@@ -60,22 +60,25 @@ public class GameManager : NetworkBehaviour
 		inPauseMenu = false;
 
 		//spawn nodes TODO only test version
-		nodes = new CaptureNode[3];
-		shuffleNodeNames (5);
-		GameObject nodePrefab = Resources.Load<GameObject>("Prefabs/Game/Misc/Node");
-		float nodeX = 0f;
-		float nodeY = 100f;
-		for (int i = 0; i < nodes.Length; i++)
+		if(isServer)
 		{
-			GameObject node = (GameObject)Instantiate (nodePrefab, new Vector3(nodeX, nodeY + 50f * i, 0f), Quaternion.identity);
-			nodes [i] = node.GetComponent<CaptureNode> ();
-			nodes[i].team = 0;
-			nodes [i].name = nodeNames [i];
-			NetworkServer.Spawn (nodes [i].gameObject);
-		}
+			nodes = new CaptureNode[3];
+			shuffleNodeNames (5);
+			GameObject nodePrefab = Resources.Load<GameObject>("Prefabs/Game/Misc/Node");
+			float nodeX = 0f;
+			float nodeY = 100f;
+			for (int i = 0; i < nodes.Length; i++)
+			{
+				GameObject node = (GameObject)Instantiate (nodePrefab, new Vector3(nodeX, nodeY + 50f * i, 0f), Quaternion.identity);
+				nodes [i] = node.GetComponent<CaptureNode> ();
+				nodes [i].team = 0;
+				nodes [i].name = nodeNames [i];
+				NetworkServer.Spawn (nodes [i].gameObject);
+			}
 
-		//setup initial game state
-		CmdChangeGameState ((int)GameState.pregame);
+			//setup initial game state
+			CmdChangeGameState ((int)GameState.pregame);
+		}
 	}
 
 	// Randomly swaps the elements of nodeNames
