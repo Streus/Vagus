@@ -77,8 +77,9 @@ public class CameraControl : MonoBehaviour
 	public void Start()
 	{
 		snapToTarget ();
-		PanBorderSize = 0.1f; //DEBUG CODE
-		panSpeed = 1.5f; //DEBUG CODE
+		//TODO remove when options are a thing
+		PanBorderSize = 0.01f; //DEBUG CODE
+		panSpeed = 2f; //DEBUG CODE
 	}
 
 	public void Update()
