@@ -24,8 +24,12 @@ public class CaptureNode : MonoBehaviour
 		return captureZone.capturingTeam;
 	}
 
+	public delegate void NodeCaptured(CaptureNode self, Faction capturingTeam);
+	public event NodeCaptured captureEvent;
 	public void captured(Faction capturingTeam)
 	{
 		Debug.Log ("Node has been captured by: " + capturingTeam.ToString ());
+		if (captureEvent != null)
+			captureEvent (this, capturingTeam);
 	}
 }

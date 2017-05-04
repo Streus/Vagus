@@ -3,31 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class CaptureArea : NetworkBehaviour
+public class CaptureArea : MonoBehaviour
 {
-	[SyncVar(hook = "OnCaptureValue")]
 	public int captureValue;
 	[SerializeField]
 	private int captureSpeed;
 	private int dValue;
 	private float delayTimer;
 	public int captureValueMax = 100;
-	[HideInInspector]
-	public Faction capturingTeam;
+	public Faction capturingTeam { get; private set; }
 
 	private List<Entity> competitors;
 
 	private CaptureNode thisNode;
-
-	public void OnCaptureValue(int capVal)
-	{
-		this.captureValue = capVal;
-	}
-	[Command]
-	public void CmdChangeCaptureValue(int capVal)
-	{
-		this.captureValue = capVal;
-	}
 
 	public void Awake()
 	{
