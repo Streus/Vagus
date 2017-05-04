@@ -62,9 +62,12 @@ public class Player : Controller
 
 	public void OnDestroy()
 	{
-		string str = CameraControl.mainCam.FollowTarget.name;
-		CameraControl.mainCam.FollowTarget = null;
-		Debug.Log(str + " reliquished control of the camera.");
+		if (isLocalPlayer)
+		{
+			string str = CameraControl.mainCam.FollowTarget.name;
+			CameraControl.mainCam.FollowTarget = null;
+			Debug.Log (str + " reliquished control of the camera.");
+		}
 
 		CustomLobbyManager.lobbyManager.players.Remove (gameObject);
 	}
